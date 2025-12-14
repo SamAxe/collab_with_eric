@@ -5,7 +5,7 @@ author:
 keywords:
 created:        2025/11/16 08:50
 last modified:  2025/12/13 14:43
-...
+---
 
 # Ubuntu droplet
 
