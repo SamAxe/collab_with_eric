@@ -75,3 +75,11 @@ that allows access to 3rd party clients or the ability to send/relay mail will n
 
 Programs that run in containers can be particicularily tricky to ensure they are not exposing additional services/ports unexpectedly (which is one of the reasons
 why these notes are being written down, in that I don't know all the tricky cases yet).
+
+## docker
+
+I think the simple approach is:
+  * Bind to localhost and then use a reverse proxy to expose the port...
+    E.g. don't do `docker run -p 80:80 nginx`, do `docker run -p 127.0.0.1:80:80 nginx`
+  * Beyond that, then there is quite a lift that involves understanding ip tables and how Docker iteracts with them.  In short, docker will bypass
+    simple firewalls, such as the `ufw` setup described earlier and may expose docker ports on the host.
