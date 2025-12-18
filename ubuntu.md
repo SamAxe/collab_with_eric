@@ -76,6 +76,12 @@ that allows access to 3rd party clients or the ability to send/relay mail will n
 Programs that run in containers can be particicularily tricky to ensure they are not exposing additional services/ports unexpectedly (which is one of the reasons
 why these notes are being written down, in that I don't know all the tricky cases yet).
 
+* Monetary -- cloud providers charge by cpu, network, and filesystem utilization
+* Downtime -- Resource is not available to your audience
+* System administration -- monitoring, backups, restoring from backups, applying security packages and package updates
+* Legal -- I'm sure it varies from situation to situation and jurisdiction and suggest speaking with legal counsel if this applies to your situation
+* Reputation -- domain/ip can get added to banned or block lists.
+
 ## docker
 
 I think the simple approach is:
