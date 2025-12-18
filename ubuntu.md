@@ -82,6 +82,11 @@ why these notes are being written down, in that I don't know all the tricky case
 * Legal -- I'm sure it varies from situation to situation and jurisdiction and suggest speaking with legal counsel if this applies to your situation
 * Reputation -- domain/ip can get added to banned or block lists.
 
+# Containers
+
+There are many reasons why containers might be needed or used and each approach likely all come with tradeoffs and nuances to be aware of as it relates to
+security and system administration.
+
 ## docker
 
 I think the simple approach is:
@@ -89,3 +94,14 @@ I think the simple approach is:
     E.g. don't do `docker run -p 80:80 nginx`, do `docker run -p 127.0.0.1:80:80 nginx`
   * Beyond that, then there is quite a lift that involves understanding ip tables and how Docker iteracts with them.  In short, docker will bypass
     simple firewalls, such as the `ufw` setup described earlier and may expose docker ports on the host.
+
+## LXC (Linux containers)
+
+This uses features in the kernel and directly manages namespaces, cgroups, and filesystems
+
+(I think that `podman` is a meta program around this and not something different, but need to update when I know more)
+
+## Kubernetes
+
+TODO
+
