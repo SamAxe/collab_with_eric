@@ -92,6 +92,7 @@ why these notes are being written down, in that I don't know all the tricky case
 * System administration -- monitoring, backups, restoring from backups, applying security packages and package updates
 * Legal -- I'm sure it varies from situation to situation and jurisdiction and suggest speaking with legal counsel if this applies to your situation
 * Reputation -- domain/ip can get added to banned or block lists.
+* Physical -- Damaged/failing drives, fire, theft, etc.
 
 # Containers
 
