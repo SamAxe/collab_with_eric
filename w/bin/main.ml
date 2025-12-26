@@ -1,5 +1,11 @@
 
 
+let determine_greeting request : string =
+  match Dream.session_field request "user" with
+  | Some username ->
+      Printf.sprintf "Welcome back, %s" username
+  | None -> "Welcome, you'll need to log in first"
+
 let show_form ?message request =
   let open Dream_html in
   let open HTML in
@@ -11,6 +17,7 @@ let show_form ?message request =
         | Some message ->
             p [] [ txt "You entered: %s" message ]
       end
+    ; p [] [ txt "%s" (determine_greeting request) ]
     ; form [ method_ `POST; action "/"]
       [ csrf_tag request
       ; label [ for_ "msg_id"] [ txt "Message" ]
@@ -82,6 +89,11 @@ let not_logged_in_greet_handler request =
   |> respond
 
 let logout_handler request =
+  let%lwt () = Dream.drop_session_field request "user" in
+  let%lwt () = Dream.invalidate_session request in
+   Dream.redirect request "/"
+
+(*
   let open Dream_html in
   let open HTML in
   html []
@@ -93,6 +105,7 @@ let logout_handler request =
     ]
   ]
   |> respond
+*)
 
 let login_form_request_decoder =
   let open Dream_html.Form in
@@ -103,7 +116,9 @@ let login_form_request_decoder =
 
 let login_form_handler request =
   match%lwt Dream_html.form login_form_request_decoder request with
-  | `Ok (_username,_password) -> show_form ~message:"Logged in" request
+  | `Ok (username,_password) ->
+      let%lwt () = Dream.set_session_field request "user" username in
+       Dream.redirect request "/"
   | `Invalid errors ->
       (* `errors` is a list of (field_name * error_key) *)
       let msg =
