@@ -11,7 +11,7 @@
 
 (maintainers "Maintainer Name <maintainer@example.com>")
 
-(license LICENSE)
+(license Apache-2.0)
 
 (documentation https://url/to/documentation)
 
@@ -19,6 +19,7 @@
  (name w)
  (synopsis "A short synopsis")
  (description "A longer description")
+ (license Apache-2.0)
  (depends ocaml)
  (tags
   ("add topics" "to describe" your project)))
