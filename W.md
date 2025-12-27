@@ -234,3 +234,11 @@ From a Draconian sense, an account could be suspended/downgraded until it was as
 This system supports groups in collaborative artifact generation.  That is, that there are places where individuals can keep notes (writing to think), groups can collaborate (both semi-privately and semi-publicly).  The outward facing product is published web artifacts, whether that be micro blog, blog/essay, or longer works.
 
 There could be affordances for interoperability with other components in the broader ecosystem, whether that be ActivityPub, AT protocol, FedWiki, etc.
+
+
+
+# Containers
+
+The principle conversation will be a `topic` container with `post` items.  A `wiki` container will contain `item`s, and a document will be a single chunk of text.  Maybe I'll add a STOP based organizational setup too.
+
+I envision that there is a conversation -> wiki -> document progression, with a citation mechanism that can be referenced in any of the forms.
