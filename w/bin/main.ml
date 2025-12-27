@@ -79,7 +79,10 @@ let not_logged_in_greet_handler request =
           ]
         ; tr []
           [ td [] [ ]
-          ; td [] [input [ type_ "submit"; value "Log in" ] ]
+          ; td []
+            [ input [ type_ "submit"; name "action"; value "Log in" ]
+            ; input [ type_ "submit"; name "action"; value "Create" ]
+            ]
           ]
         ]
 
@@ -110,29 +113,55 @@ let logout_handler request =
 let login_form_request_decoder =
   let open Dream_html.Form in
   let+ username = required string "username"
-  and+ password = required string "password" in
-  (username,password)
+  and+ password = required string "password"
+  and+ action   = required string "action" in
+  (username,password,action)
 
-
-(* let _hashed_pwd = "sekret" *)
-let hashed_pwd = {|$argon2id$v=19$m=65536,t=2,p=1$QVFBTlNURlpIUQ$UFHXKohiBXmZtKLaAw6YbvhVt3mf2T7kcaQ7J/VYxq4|}
 
 let login_form_handler request =
   match%lwt Dream_html.form login_form_request_decoder request with
-  | `Ok (username,password) ->
-      if Pwd.verify hashed_pwd password
-(*       if true *)
-      then
-(*
-        let hashed_pwd = Result.get_ok (Pwd.hash_password password) in
-        Dream.log "Hashed pwd is %s" hashed_pwd;
-*)
+  | `Ok (username,password,action) ->
+      begin
+        match action with
+        | "Log in" ->
+          let%lwt result = Dream.sql request (User.get_by_username username ) in
+          begin
+            match result with
+            | Ok (Some (_db_username, db_password_hash)) ->
+                begin
+                if Pwd.verify db_password_hash password
+                then
+                  let%lwt () = Dream.invalidate_session request in
+                  let%lwt () = Dream.set_session_field request "user" username in
+                    Dream.redirect request "/"
+                else
+                  show_form ~message:"Login failed, invalid username or password" request
+                end
+            | Ok None ->
+                Dream.log "User login failed %s" username;
+                Dream.redirect request "/"
+            | Error e ->
+                Dream.log "User login error (%s) %s" username (Caqti_error.show e);
+                Dream.redirect request "/"
+            end;
 
-        let%lwt () = Dream.invalidate_session request in
-        let%lwt () = Dream.set_session_field request "user" username in
-         Dream.redirect request "/"
-      else
-        show_form ~message:"Login failed, invalid username or password" request
+        | "Create" ->
+            let hashed_pwd = Result.get_ok (Pwd.hash_password password) in
+(*             Dream.log "Hashed pwd is %s" hashed_pwd; *)
+            let%lwt result = Dream.sql request (User.register_user username hashed_pwd) in
+            begin
+              match result with
+              | Ok () -> Dream.log "User created!"
+              | Error e -> Dream.log "User creation error %s" e
+              end;
+
+            let%lwt () = Dream.invalidate_session request in
+            let%lwt () = Dream.set_session_field request "user" username in
+             Dream.redirect request "/"
+        | _ ->
+            Dream.log "Unknown action: '%s'" action;
+            Dream.redirect request "/"
+      end
 
   | `Invalid errors ->
       (* `errors` is a list of (field_name * error_key) *)

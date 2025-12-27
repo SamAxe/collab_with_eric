@@ -1,2 +1,3 @@
 _build/**
 priv_notes.md
+*.db
