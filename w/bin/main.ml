@@ -123,8 +123,10 @@ let login_form_handler request =
       if Pwd.verify hashed_pwd password
 (*       if true *)
       then
+(*
         let hashed_pwd = Result.get_ok (Pwd.hash_password password) in
         Dream.log "Hashed pwd is %s" hashed_pwd;
+*)
 
         let%lwt () = Dream.invalidate_session request in
         let%lwt () = Dream.set_session_field request "user" username in
@@ -151,17 +153,21 @@ let login_form_handler request =
   | `Wrong_content_type -> Dream.html "Wrong content"
 
 
-
+let require_login handler request =
+  match Dream.session_field request "user" with
+  | Some _username -> handler request
+  | None -> Dream.redirect request "/login"
 
 let () =
   Dream.run
     ~port:8081
     ~error_handler:Dream.debug_error_handler
+    ~tls:true
   @@ Dream.logger
   @@ Dream.memory_sessions
   @@ Dream.router
     [ Dream.get  "/" show_form
-    ; Dream.post "/" message_form_handler
+    ; Dream.post "/" (require_login message_form_handler)
 
     ; Dream.get "/login" not_logged_in_greet_handler
     ; Dream.post "/login" login_form_handler
